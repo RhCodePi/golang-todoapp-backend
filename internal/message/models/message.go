@@ -1,9 +1,13 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type TodoMessage struct {
-	ID                string    `json:"id"`
+	MessageID         uuid.UUID `json:"id"`
 	TodoListID        string    `json:"todo_list_id"`
 	CreationTime      time.Time `json:"creation_time"`
 	RefactoritionTime time.Time `json:"refactorition_time"`

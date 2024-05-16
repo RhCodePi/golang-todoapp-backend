@@ -1,4 +1,4 @@
-package models
+package dtos
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type TodoList struct {
+type TodoListDto struct {
 	TodoListID          uuid.UUID `json:"todolistid"`
 	CreationTime        time.Time `json:"creation_time"`
 	RefactoritionTime   time.Time `json:"refactorition_time"`
