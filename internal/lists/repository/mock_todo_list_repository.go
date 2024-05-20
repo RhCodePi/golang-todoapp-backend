@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"demoapp/internal/lists/models"
+	lists_models "demoapp/internal/lists/models"
 	"errors"
 	"time"
 
@@ -12,27 +12,27 @@ import (
 type MockTodoListRepository struct {
 }
 
-var todoLists []*models.TodoList
+var todoLists []*lists_models.TodoList
 
 func init() {
 
 	var newId = uuid.NewV1()
 	var newId2 = uuid.NewV1()
 
-	todoLists = []*models.TodoList{
+	todoLists = []*lists_models.TodoList{
 		{
 			TodoListID:          newId,
 			CreationTime:        time.Now(),
 			RefactoritionTime:   time.Time{},
 			DeletionTime:        time.Time{},
-			CompletionOfPercent: 0.5,
+			CompletionOfPercent: 0,
 		},
 		{
 			TodoListID:          newId2,
-			CreationTime:        time.Now().Add(-24 * time.Hour),
+			CreationTime:        time.Now(),
 			RefactoritionTime:   time.Time{},
 			DeletionTime:        time.Time{},
-			CompletionOfPercent: 0.75,
+			CompletionOfPercent: 0,
 		},
 	}
 }
@@ -41,16 +41,16 @@ func NewMockTodoListRepository() *MockTodoListRepository {
 	return &MockTodoListRepository{}
 }
 
-func (p *MockTodoListRepository) CreateTodoList(ctx context.Context, todoList *models.TodoList) (*models.TodoList, error) {
+func (p *MockTodoListRepository) CreateTodoList(ctx context.Context, todoList *lists_models.TodoList) (*lists_models.TodoList, error) {
 
 	todoLists = append(todoLists, todoList)
 
 	return todoList, nil
 }
 
-func (p *MockTodoListRepository) GetTodoListById(ctx context.Context, uuid uuid.UUID) (*models.TodoList, error) {
+func (p *MockTodoListRepository) GetTodoListById(ctx context.Context, uuid uuid.UUID) (*lists_models.TodoList, error) {
 
-	var todoList *models.TodoList
+	var todoList *lists_models.TodoList
 
 	for _, t := range todoLists {
 
@@ -62,11 +62,38 @@ func (p *MockTodoListRepository) GetTodoListById(ctx context.Context, uuid uuid.
 	return todoList, nil
 }
 
-func (p *MockTodoListRepository) GetAllTodoList() ([]*models.TodoList, error) {
+func (p *MockTodoListRepository) GetAllTodoList() ([]*lists_models.TodoList, error) {
 
 	if len(todoLists) <= 0 {
-		return []*models.TodoList{}, errors.New("todo lists are empty ")
+		return nil, errors.New("todo lists are empty ")
 	}
 
 	return todoLists, nil
+}
+
+func (p *MockTodoListRepository) UpdateTodoList(todoListId uuid.UUID) {
+
+	UpdateTodoListWithID(todoListId)
+}
+
+func UpdateTodoListWithID(todoListId uuid.UUID) {
+	for _, t := range todoLists {
+
+		if t.TodoListID == todoListId {
+			t.RefactoritionTime = time.Now()
+
+		}
+	}
+}
+
+func (p *MockTodoListRepository) DeleteTodoList(todoListId uuid.UUID, deletionTime time.Time) error {
+
+	for _, t := range todoLists {
+
+		if t.TodoListID == todoListId {
+			t.DeletionTime = time.Now()
+			return nil
+		}
+	}
+	return errors.New("todo List not found")
 }

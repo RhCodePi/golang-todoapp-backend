@@ -25,7 +25,7 @@ func (q *GetTodoListByIdQueryHandler) Handle(ctx context.Context, query *GetTodo
 		return nil, errors.Wrap(err, fmt.Sprintf("Todo List with id %s not found", query.TodoListId))
 	}
 
-	todoListDto := lists.MapTodoListToTodoListDto(todoList)
+	todoListDto := lists.MapTodoListToTodoListDto(todoList, nil)
 
 	return &dtos.GetTodoListByIdQueryResponse{TodoListDto: todoListDto}, nil
 }

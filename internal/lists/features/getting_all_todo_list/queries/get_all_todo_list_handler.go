@@ -22,7 +22,7 @@ func (q *GetAllTodoListQueryHandler) Handle(ctx context.Context, query *GetAllTo
 		return nil, err
 	}
 
-	todoListsDto := lists.MapTodoListsToTodoListDto(todoLists)
+	todoListsDto := lists.MapTodoListsToTodoListDto(todoLists, nil)
 
 	return &dtos.GetAllTodoListQueryResponse{TodoListsDto: todoListsDto}, nil
 }

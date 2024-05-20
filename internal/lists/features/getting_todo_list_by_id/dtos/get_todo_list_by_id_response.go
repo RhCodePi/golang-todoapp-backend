@@ -2,10 +2,10 @@ package dtos
 
 import (
 	"demoapp/internal/lists/dtos"
-	"demoapp/internal/message/models"
+	"demoapp/internal/messages/models"
 )
 
 type GetTodoListByIdQueryResponse struct {
 	TodoListDto *dtos.TodoListDto   `json:"todolist"`
-	Message     *models.TodoMessage `json:"message"`
+	TodoMessage *models.TodoMessage `json:"todomessage"`
 }

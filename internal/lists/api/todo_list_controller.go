@@ -1,8 +1,10 @@
 package api
 
 import (
-	"demoapp/internal/lists/features/creating_todo_list/commands"
+	create_command "demoapp/internal/lists/features/creating_todo_list/commands"
 	create_dtos "demoapp/internal/lists/features/creating_todo_list/dtos"
+	"demoapp/internal/lists/features/deleting_todo_list/commands"
+	"demoapp/internal/lists/features/deleting_todo_list/dtos"
 	get_all_dtos "demoapp/internal/lists/features/getting_all_todo_list/dtos"
 	get_all_queries "demoapp/internal/lists/features/getting_all_todo_list/queries"
 	get_by_id_dtos "demoapp/internal/lists/features/getting_todo_list_by_id/dtos"
@@ -36,8 +38,9 @@ func (td *TodoListsController) createTodoList() echo.HandlerFunc {
 			return err
 		}
 
-		command := commands.NewCreateTodoListCommand()
-		result, err := mediatr.Send[*commands.CreateTodoListCommand, *create_dtos.CreateTodoListCommandResponse](ctx.Request().Context(), command)
+		command := create_command.NewCreateTodoListCommand()
+
+		result, err := mediatr.Send[*create_command.CreateTodoListCommand, *create_dtos.CreateTodoListCommandResponse](ctx.Request().Context(), command)
 
 		if err != nil {
 			return err
@@ -55,11 +58,10 @@ func (td *TodoListsController) getTodoListByID() echo.HandlerFunc {
 			return err
 		}
 
-		query := get_by_id_queries.NewGetTodoListByIdQuery(request.TodoListID)
-
-		if err := td.validator.StructCtx(ctx.Request().Context(), query); err != nil {
+		if err := td.validator.StructCtx(ctx.Request().Context(), request); err != nil {
 			return err
 		}
+		query := get_by_id_queries.NewGetTodoListByIdQuery(request.TodoListID)
 
 		queryResult, err := mediatr.Send[*get_by_id_queries.GetTodoListByIdQuery, *get_by_id_dtos.GetTodoListByIdQueryResponse](ctx.Request().Context(), query)
 
@@ -79,11 +81,10 @@ func (td *TodoListsController) getAllTodoList() echo.HandlerFunc {
 			return err
 		}
 
-		query := get_all_queries.NewGetAllTodoListQuery()
-
-		if err := td.validator.StructCtx(ctx.Request().Context(), query); err != nil {
+		if err := td.validator.StructCtx(ctx.Request().Context(), request); err != nil {
 			return err
 		}
+		query := get_all_queries.NewGetAllTodoListQuery()
 
 		queryResult, err := mediatr.Send[*get_all_queries.GetAllTodoListQuery, *get_all_dtos.GetAllTodoListQueryResponse](ctx.Request().Context(), query)
 
@@ -92,5 +93,27 @@ func (td *TodoListsController) getAllTodoList() echo.HandlerFunc {
 		}
 
 		return ctx.JSON(http.StatusOK, queryResult)
+	}
+}
+
+func (td *TodoListsController) deleteTodoList() echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		request := &dtos.DeleteTodoListRequestDto{}
+		if err := ctx.Bind(request); err != nil {
+			return err
+		}
+
+		if err := td.validator.StructCtx(ctx.Request().Context(), request); err != nil {
+			return err
+		}
+		command := commands.NewDeleteTodoListCommand(request.TodoListId)
+
+		result, err := mediatr.Send[*commands.DeleteTodoListCommand, *dtos.DeleteTodoListCommandResponse](ctx.Request().Context(), command)
+
+		if err != nil {
+			return err
+		}
+
+		return ctx.JSON(http.StatusOK, result)
 	}
 }
